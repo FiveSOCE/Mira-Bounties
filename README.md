@@ -2,6 +2,14 @@
 
 Standalone player bounty hunting for the Mira Paper 1.21.11 / Java 21 plugin suite.
 
+## Download
+
+Current release: **v0.1.0**
+
+[**Download MiraBounties v0.1.0**](https://github.com/FiveSOCE/Mira-Bounties/releases/download/v0.1.0/MiraBounties-0.1.0.jar)
+
+[View all releases](https://github.com/FiveSOCE/Mira-Bounties/releases)
+
 ## Features
 
 - Vault-backed player bounties
@@ -57,5 +65,3 @@ Output:
 ```text
 build/libs/MiraBounties-0.1.0.jar
 ```
-
-The verified release download is added here after CI/release verification.
