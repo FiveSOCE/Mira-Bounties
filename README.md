@@ -1,67 +1,46 @@
 # MiraBounties
 
-Standalone player bounty hunting for the Mira Paper 1.21.11 / Java 21 plugin suite.
+MiraBounties is the player-bounty system for the Mira Paper server suite. Players can place Vault-backed bounties on other players, stack contributions on the same target, view the richest targets, and automatically pay the bounty to a legitimate killer.
 
 ## Download
 
-Current release: **v0.1.0**
-
 [**Download MiraBounties v0.1.0**](https://github.com/FiveSOCE/Mira-Bounties/releases/download/v0.1.0/MiraBounties-0.1.0.jar)
 
-[View all releases](https://github.com/FiveSOCE/Mira-Bounties/releases)
-
-## Features
-
-- Vault-backed player bounties
-- multiple bounty contributions stack on one target
-- configurable minimum and maximum post values
-- configurable contribution expiry with optional refunds
-- automatic bounty payout on legitimate player kill
-- high-value post and claim broadcasts
-- `/bounty <player>`
-- `/bounty <player> <amount>`
-- `/bounty top`
-- `/bounty admin set <player> <amount>`
-- `/bounty admin clear <player>`
-- PlaceholderAPI leaderboard placeholders
-- public `MiraBountiesApi` through Bukkit ServicesManager
-
-## PlaceholderAPI
-
-```text
-%mirabounties_bounty%
-%mirabounties_bounty_formatted%
-%mirabounties_top_1_name%
-%mirabounties_top_1_value%
-%mirabounties_top_1_formatted%
-```
-
-Top placeholders support ranks 1 through 10 and work without player context, making them suitable for MiraNPC and leaderboard displays.
-
-## Data
-
-Persistent bounty contributions are stored in:
-
-```text
-plugins/MiraBounties/bounties.yml
-```
-
-## Requirements
+## Requirements / Dependencies
 
 - Paper 1.21.11
 - Java 21
 - Vault
-- Vault-compatible economy provider
+- A Vault-compatible economy provider
 - PlaceholderAPI optional
+- MiraCore optional integration
+- MiraCombat optional integration
+- MiraLeaderboards optional integration
+- MiraNPC optional integration
 
-## Building
+## How MiraBounties Works
 
-```bash
-gradle clean build
-```
+Bounties are persistent money rewards attached to player targets. Multiple players can contribute to the same bounty, with configurable minimum/maximum contribution limits and optional contribution expiry/refunds. When a valid player kill occurs, the accumulated bounty is paid to the killer and removed from the target. High-value posts and claims can be broadcast server-wide. Bounty data is stored in `plugins/MiraBounties/bounties.yml`.
 
-Output:
+PlaceholderAPI exposes the current player's bounty and Top 10 bounty rankings, allowing the data to be displayed through MiraNPC or other leaderboard displays.
 
-```text
-build/libs/MiraBounties-0.1.0.jar
-```
+## Commands
+
+| Command | Permission | What it does |
+| --- | --- | --- |
+| `/bounty` | `mirabounties.use` | Opens/views normal bounty information. |
+| `/bounty <player>` | `mirabounties.use` | Shows the selected player's current bounty. |
+| `/bounty <player> <amount>` | `mirabounties.post` | Adds the specified amount to that player's bounty. |
+| `/bounty top` | `mirabounties.use` | Displays the highest active bounties. |
+| `/bounty admin set <player> <amount>` | `mirabounties.admin` | Force-sets a player's bounty value. |
+| `/bounty admin clear <player>` | `mirabounties.admin` | Clears a player's active bounty. |
+
+Aliases: `/bounties`
+
+## Permissions
+
+| Permission | Default | What it does |
+| --- | --- | --- |
+| `mirabounties.use` | Everyone | Allows normal bounty viewing and use. |
+| `mirabounties.post` | Everyone | Allows posting/contributing money to bounties. |
+| `mirabounties.admin` | OP | Allows administrative bounty management. |
