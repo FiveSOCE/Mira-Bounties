@@ -247,8 +247,8 @@ public final class MiraBountiesPlugin extends JavaPlugin implements Listener, Ta
 
     private String money(double amount) { return NumberFormat.getCurrencyInstance(Locale.US).format(amount); }
     private String name(OfflinePlayer player) { return player.getName() == null ? player.getUniqueId().toString() : player.getName(); }
-    private void msg(CommandSender sender, String message) { sender.sendMessage(ChatColor.translateAlternateColorCodes('&', getConfig().getString("messages.prefix", "&5[MiraBounties]&r ") + message)); }
-    private void broadcast(String message) { Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', message)); }
+    private void msg(CommandSender sender, String message) { sender.sendMessage(ChatColor.translateAlternateColorCodes('&', getConfig().getString("messages.prefix", "&5&lMira &8>> &r") + message)); }
+    private void broadcast(String message) { Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', getConfig().getString("messages.prefix", "&5&lMira &8>> &r") + message)); }
 
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
