@@ -6,4 +6,4 @@ broadcast:
   post-threshold: 100000.0
   claim-threshold: 100000.0
 messages:
-  prefix: "&5[MiraBounties]&r "
+  prefix: "&5&lMira &8>> &r"
