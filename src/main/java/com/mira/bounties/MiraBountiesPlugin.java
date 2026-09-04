@@ -470,8 +470,8 @@ public final class MiraBountiesPlugin extends JavaPlugin implements Listener, Ta
             try {
                 UUID killer = UUID.fromString(String.valueOf(raw.get("killer")));
                 UUID victim = UUID.fromString(String.valueOf(raw.get("victim")));
-                String killerName = String.valueOf(raw.getOrDefault("killer-name", killer.toString()));
-                String victimName = String.valueOf(raw.getOrDefault("victim-name", victim.toString()));
+                String killerName = String.valueOf(raw.containsKey("killer-name") ? raw.get("killer-name") : killer.toString());
+                String victimName = String.valueOf(raw.containsKey("victim-name") ? raw.get("victim-name") : victim.toString());
                 double amount = number(raw.get("amount"));
                 long time = longNumber(raw.get("time"));
                 if (amount > 0 && time > 0) {
