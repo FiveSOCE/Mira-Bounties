@@ -7,4 +7,10 @@ public interface MiraBountiesApi {
     double bounty(UUID player);
     Map<UUID, Double> top(int limit);
     boolean hasBounty(UUID player);
+
+    int claims(UUID hunter);
+    double claimedTotal(UUID hunter);
+    Map<UUID, Double> topHunters(int limit);
+    double totalPosted();
+    double totalClaimed();
 }
