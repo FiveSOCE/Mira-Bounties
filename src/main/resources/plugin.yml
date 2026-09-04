@@ -4,13 +4,13 @@ main: com.mira.bounties.MiraBountiesPlugin
 api-version: '1.21'
 authors: [FiveS]
 description: Persistent player bounty hunting for the Mira plugin ecosystem.
-depend: [Vault]
-softdepend: [PlaceholderAPI, MiraCombat, MiraCore, MiraLeaderboards, MiraNPC]
+depend: [Vault, MiraCore]
+softdepend: [PlaceholderAPI, MiraLeaderboards, MiraNPC]
 
 commands:
   bounty:
     description: View, post and manage player bounties.
-    usage: /bounty [player|top|admin]
+    usage: /bounty [player|top|hunters|history|admin]
     aliases: [bounties]
 
 permissions:
