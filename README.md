@@ -4,7 +4,7 @@ MiraBounties is the player-bounty system for the Mira Paper server suite. Player
 
 ## Download
 
-[**Download MiraBounties v0.1.4**](https://github.com/FiveSOCE/Mira-Bounties/releases/download/v0.1.4/MiraBounties-0.1.4.jar)
+[**Download MiraBounties v0.1.5**](https://github.com/FiveSOCE/Mira-Bounties/releases/download/v0.1.5/MiraBounties-0.1.5.jar)
 
 [View All Releases](https://github.com/FiveSOCE/Mira-Bounties/releases)
 
@@ -88,11 +88,16 @@ Before any money moves, MiraBounties shows the target, existing bounty, amount b
 If the bounty disappears, the confirmation expires, or the player's balance is insufficient, nothing is charged.
 
 
-## Bounty Audio Audiences (0.1.4)
+## Bounty Audio Audiences (0.1.5)
 
 - the player placing/increasing a bounty hears `bounty_placed`
 - the online target receiving that bounty hears `bounty_received`
 - when a bounty is claimed, every online player who contributed funds to that bounty hears `bounty_claimed`
-- large bounty claims additionally trigger `bounty_claimed_large` server-wide
+- large bounty claims use `bounty_claimed_large` server-wide **instead of** the normal contributor claim sound
 
 The bounty hunter is still paid normally, but the standard claim-confirmation sound belongs to the bounty contributors rather than the hunter.
+
+
+## Large Claim Audio Finalization (0.1.5)
+
+Normal and large bounty claim sounds are mutually exclusive. Normal claims notify online bounty contributors; large claims replace that sound with the single server-wide End Portal celebration so contributors do not hear two claim sounds at once.
