@@ -30,4 +30,14 @@ public final class CosmeticsBridge {
             if (player.getLocation().distanceSquared(location) <= radiusSquared) play(player, eventId);
         }
     }
+
+    public static void playGlobal(String eventId, Location source) {
+        if (eventId == null) return;
+        Plugin cosmetics = Bukkit.getPluginManager().getPlugin("MiraCosmetics");
+        if (cosmetics == null || !cosmetics.isEnabled()) return;
+        try {
+            cosmetics.getClass().getMethod("playAudioEventGlobal", String.class, Location.class)
+                    .invoke(cosmetics, eventId, source);
+        } catch (ReflectiveOperationException ignored) { }
+    }
 }
