@@ -4,7 +4,7 @@ MiraBounties is the player-bounty system for the Mira Paper server suite. Player
 
 ## Download
 
-[**Download MiraBounties v0.1.3**](https://github.com/FiveSOCE/Mira-Bounties/releases/download/v0.1.3/MiraBounties-0.1.3.jar)
+[**Download MiraBounties v0.1.4**](https://github.com/FiveSOCE/Mira-Bounties/releases/download/v0.1.4/MiraBounties-0.1.4.jar)
 
 [View All Releases](https://github.com/FiveSOCE/Mira-Bounties/releases)
 
@@ -86,3 +86,13 @@ Players can explicitly increase an already-active bounty with `/bounty add <play
 Before any money moves, MiraBounties shows the target, existing bounty, amount being added and resulting new total. `/bounty confirm` must be used within the configured confirmation window before Vault is asked to withdraw the contribution.
 
 If the bounty disappears, the confirmation expires, or the player's balance is insufficient, nothing is charged.
+
+
+## Bounty Audio Audiences (0.1.4)
+
+- the player placing/increasing a bounty hears `bounty_placed`
+- the online target receiving that bounty hears `bounty_received`
+- when a bounty is claimed, every online player who contributed funds to that bounty hears `bounty_claimed`
+- large bounty claims additionally trigger `bounty_claimed_large` server-wide
+
+The bounty hunter is still paid normally, but the standard claim-confirmation sound belongs to the bounty contributors rather than the hunter.
