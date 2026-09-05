@@ -37,6 +37,7 @@ public final class MiraBountiesPlugin extends JavaPlugin implements Listener, Ta
     private final List<ClaimRecord> claimHistory = new ArrayList<>();
     private double totalPosted;
     private double totalClaimed;
+    private final Map<UUID, PendingIncrease> pendingIncreases = new HashMap<>();
 
     @Override
     public void onEnable() {
@@ -151,6 +152,8 @@ public final class MiraBountiesPlugin extends JavaPlugin implements Listener, Ta
         if (args.length == 0) {
             msg(sender, "&d/bounty <player> &7- view a bounty");
             msg(sender, "&d/bounty <player> <amount> &7- post a bounty");
+            msg(sender, "&d/bounty add <player> <amount> &7- increase an existing bounty with confirmation");
+            msg(sender, "&d/bounty confirm &7- confirm your pending bounty increase");
             msg(sender, "&d/bounty top &7- richest active bounties");
             msg(sender, "&d/bounty hunters &7- top bounty hunters by money claimed");
             msg(sender, "&d/bounty history [player] &7- recent bounty claims");
@@ -161,6 +164,8 @@ public final class MiraBountiesPlugin extends JavaPlugin implements Listener, Ta
         }
 
         if (args[0].equalsIgnoreCase("top")) return showTop(sender);
+        if (args[0].equalsIgnoreCase("add")) return prepareIncrease(sender, args);
+        if (args[0].equalsIgnoreCase("confirm")) return confirmIncrease(sender);
         if (args[0].equalsIgnoreCase("hunters")) return showHunters(sender);
         if (args[0].equalsIgnoreCase("history")) return showHistory(sender, args);
         if (args[0].equalsIgnoreCase("admin")) return admin(sender, args);
@@ -197,20 +202,100 @@ public final class MiraBountiesPlugin extends JavaPlugin implements Listener, Ta
             return true;
         }
 
-        double min = getConfig().getDouble("minimum-post", 1000.0);
-        double max = getConfig().getDouble("maximum-post", 1_000_000_000.0);
-        if (!Double.isFinite(amount) || amount < min || amount > max) {
+        return postContribution(player, target, amount, false);
+    }
+
+    private boolean prepareIncrease(CommandSender sender, String[] args) {
+        if (!(sender instanceof Player player)) {
+            msg(sender, "&cPlayers must fund bounty increases.");
+            return true;
+        }
+        if (!sender.hasPermission("mirabounties.post")) {
+            msg(sender, "&cYou cannot post bounties.");
+            return true;
+        }
+        if (args.length < 3) {
+            msg(sender, "&eUsage: /bounty add <player> <amount>");
+            return true;
+        }
+
+        OfflinePlayer target = Bukkit.getOfflinePlayer(args[1]);
+        if (target.getName() == null && !target.hasPlayedBefore() && !target.isOnline()) {
+            msg(sender, "&cPlayer not found.");
+            return true;
+        }
+        if (target.getUniqueId().equals(player.getUniqueId())) {
+            msg(sender, "&cYou cannot increase a bounty on yourself.");
+            return true;
+        }
+        double existing = bounty(target.getUniqueId());
+        if (existing <= 0D) {
+            msg(sender, "&cThat player has no active bounty. Use /bounty " + name(target) + " <amount> to create one.");
+            return true;
+        }
+
+        double amount;
+        try { amount = Double.parseDouble(args[2]); }
+        catch (NumberFormatException ex) {
+            msg(sender, "&cAmount must be a number.");
+            return true;
+        }
+        if (!validPostAmount(amount)) {
+            double min = getConfig().getDouble("minimum-post", 1000.0);
+            double max = getConfig().getDouble("maximum-post", 1_000_000_000.0);
             msg(sender, "&cAmount must be between " + money(min) + " and " + money(max) + ".");
             return true;
         }
+
+        long seconds = Math.max(10L, getConfig().getLong("increase-confirm-seconds", 30L));
+        pendingIncreases.put(player.getUniqueId(),
+                new PendingIncrease(target.getUniqueId(), name(target), amount, existing,
+                        System.currentTimeMillis() + seconds * 1000L));
+
+        msg(sender, "&dBounty Increase Confirmation");
+        msg(sender, "&7Target: &f" + name(target));
+        msg(sender, "&7Existing bounty: &f" + money(existing));
+        msg(sender, "&7Adding: &6" + money(amount));
+        msg(sender, "&7New total: &a" + money(existing + amount));
+        msg(sender, "&eNo money has been taken. Use &f/bounty confirm &ewithin " + seconds + "s.");
+        return true;
+    }
+
+    private boolean confirmIncrease(CommandSender sender) {
+        if (!(sender instanceof Player player)) {
+            msg(sender, "&cPlayers only.");
+            return true;
+        }
+        PendingIncrease pending = pendingIncreases.remove(player.getUniqueId());
+        if (pending == null || System.currentTimeMillis() >= pending.expiresAt()) {
+            msg(sender, "&cYou do not have a valid pending bounty increase.");
+            return true;
+        }
+
+        OfflinePlayer target = Bukkit.getOfflinePlayer(pending.target());
+        double current = bounty(pending.target());
+        if (current <= 0D) {
+            msg(sender, "&cThat bounty is no longer active. Nothing was charged.");
+            return true;
+        }
+        return postContribution(player, target, pending.amount(), true);
+    }
+
+    private boolean postContribution(Player player, OfflinePlayer target, double amount, boolean increase) {
+        if (!validPostAmount(amount)) {
+            double min = getConfig().getDouble("minimum-post", 1000.0);
+            double max = getConfig().getDouble("maximum-post", 1_000_000_000.0);
+            msg(player, "&cAmount must be between " + money(min) + " and " + money(max) + ".");
+            return true;
+        }
         if (economy.getBalance(player) < amount) {
-            msg(sender, "&cYou do not have enough money.");
+            msg(player, "&cYou do not have enough money.");
             return true;
         }
 
         var result = economy.withdrawPlayer(player, amount);
         if (!result.transactionSuccess()) {
-            msg(sender, "&cEconomy transaction failed: " + result.errorMessage);
+            msg(player, "&cEconomy transaction failed: " + result.errorMessage);
             return true;
         }
 
@@ -222,20 +307,28 @@ public final class MiraBountiesPlugin extends JavaPlugin implements Listener, Ta
         totalPosted += amount;
         saveData();
 
-        core.audit().record("MiraBounties", "BOUNTY_POSTED", player.getUniqueId(), player.getName(),
-                target.getUniqueId().toString(), "Posted bounty contribution",
-                Map.of("amount", Double.toString(amount), "targetName", name(target)));
+        core.audit().record("MiraBounties", increase ? "BOUNTY_INCREASED" : "BOUNTY_POSTED",
+                player.getUniqueId(), player.getName(), target.getUniqueId().toString(),
+                increase ? "Increased active bounty" : "Posted bounty contribution",
+                Map.of("amount", Double.toString(amount), "targetName", name(target),
+                        "newTotal", Double.toString(bounty(target.getUniqueId()))));
 
-        msg(sender, "&aPosted &f" + money(amount) + " &aon &f" + name(target)
+        msg(player, (increase ? "&aAdded &f" : "&aPosted &f") + money(amount) + " &aon &f" + name(target)
                 + "&a. Total bounty: &f" + money(bounty(target.getUniqueId())));
         Player onlineTarget = Bukkit.getPlayer(target.getUniqueId());
         if (onlineTarget != null) CosmeticsBridge.play(onlineTarget, "bounty_placed");
 
         if (amount >= getConfig().getDouble("broadcast.post-threshold", 100000.0)) {
-            broadcast("&6&lBOUNTY &e" + player.getName() + " &7placed &6" + money(amount)
-                    + " &7on &c" + name(target) + "&7. Total: &6" + money(bounty(target.getUniqueId())));
+            broadcast("&6&lBOUNTY &e" + player.getName() + (increase ? " &7added &6" : " &7placed &6")
+                    + money(amount) + " &7on &c" + name(target) + "&7. Total: &6" + money(bounty(target.getUniqueId())));
         }
         return true;
+    }
+
+    private boolean validPostAmount(double amount) {
+        double min = getConfig().getDouble("minimum-post", 1000.0);
+        double max = getConfig().getDouble("maximum-post", 1_000_000_000.0);
+        return Double.isFinite(amount) && amount >= min && amount <= max;
     }
 
     private boolean showTop(CommandSender sender) {
@@ -572,13 +665,16 @@ public final class MiraBountiesPlugin extends JavaPlugin implements Listener, Ta
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         if (args.length == 1) {
-            List<String> values = new ArrayList<>(List.of("top", "hunters", "history"));
+            List<String> values = new ArrayList<>(List.of("top", "hunters", "history", "add", "confirm"));
             if (sender.hasPermission("mirabounties.admin")) values.add("admin");
             values.addAll(Bukkit.getOnlinePlayers().stream().map(Player::getName).toList());
             return match(args[0], values);
         }
         if (args.length == 2 && args[0].equalsIgnoreCase("admin")) {
             return match(args[1], List.of("set", "clear"));
+        }
+        if (args.length == 2 && args[0].equalsIgnoreCase("add")) {
+            return match(args[1], Bukkit.getOnlinePlayers().stream().map(Player::getName).toList());
         }
         if (args.length == 2 && args[0].equalsIgnoreCase("history")) {
             return match(args[1], Bukkit.getOnlinePlayers().stream().map(Player::getName).toList());
@@ -595,6 +691,7 @@ public final class MiraBountiesPlugin extends JavaPlugin implements Listener, Ta
                 .distinct().sorted().toList();
     }
 
+    private record PendingIncrease(UUID target, String targetName, double amount, double previousTotal, long expiresAt) {}
     private record Contribution(UUID id, UUID poster, double amount, long createdAt, long expiresAt) {}
     private record ClaimRecord(UUID killer, String killerName, UUID victim, String victimName, double amount, long time) {}
 
