@@ -4,7 +4,9 @@ MiraBounties is the player-bounty system for the Mira Paper server suite. Player
 
 ## Download
 
-[**Download MiraBounties v0.1.1**](https://github.com/FiveSOCE/Mira-Bounties/releases/download/v0.1.1/MiraBounties-0.1.1.jar)
+[**Download MiraBounties v0.1.2**](https://github.com/FiveSOCE/Mira-Bounties/releases/download/v0.1.2/MiraBounties-0.1.2.jar)
+
+[View All Releases](https://github.com/FiveSOCE/Mira-Bounties/releases)
 
 ## Requirements / Dependencies
 
@@ -16,6 +18,7 @@ MiraBounties is the player-bounty system for the Mira Paper server suite. Player
 - MiraCore 0.2.0 or newer
 - MiraLeaderboards optional integration
 - MiraNPC optional integration
+- MiraCosmetics optional for centralized audio effects
 
 ## How MiraBounties Works
 
@@ -69,3 +72,7 @@ Ranked/global:
 - `%mirabounties_last_claim_victim%`
 - `%mirabounties_last_claim_value%`
 - `%mirabounties_last_claim_formatted%`
+
+## MiraCosmetics Audio Integration (0.1.2)
+
+MiraCosmetics audio hooks warn an online bounty target when a bounty is posted and play claim audio, with high-value claims using the stronger nearby celebration.
