@@ -1,5 +1,6 @@
 minimum-post: 1000.0
 maximum-post: 1000000000.0
+increase-confirm-seconds: 30
 expire-days: 30
 refund-expired: true
 history-limit: 5000
