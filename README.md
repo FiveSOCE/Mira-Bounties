@@ -4,7 +4,7 @@ MiraBounties is the player-bounty system for the Mira Paper server suite. Player
 
 ## Download
 
-[**Download MiraBounties v0.1.2**](https://github.com/FiveSOCE/Mira-Bounties/releases/download/v0.1.2/MiraBounties-0.1.2.jar)
+[**Download MiraBounties v0.1.3**](https://github.com/FiveSOCE/Mira-Bounties/releases/download/v0.1.3/MiraBounties-0.1.3.jar)
 
 [View All Releases](https://github.com/FiveSOCE/Mira-Bounties/releases)
 
@@ -34,7 +34,9 @@ PlaceholderAPI exposes player bounty/hunter stats, active Top 10 bounty rankings
 | --- | --- | --- |
 | `/bounty` | `mirabounties.use` | Opens/views normal bounty information. |
 | `/bounty <player>` | `mirabounties.use` | Shows the selected player's current bounty. |
-| `/bounty <player> <amount>` | `mirabounties.post` | Adds the specified amount to that player's bounty. |
+| `/bounty <player> <amount>` | `mirabounties.post` | Posts a normal bounty contribution immediately. |
+| `/bounty add <player> <amount>` | `mirabounties.post` | Previews an increase to an existing bounty without charging yet. |
+| `/bounty confirm` | `mirabounties.post` | Confirms the pending increase and performs the Vault withdrawal. |
 | `/bounty top` | `mirabounties.use` | Displays the highest active bounties. |
 | `/bounty hunters` | `mirabounties.use` | Displays the top bounty hunters by total money claimed. |
 | `/bounty history [player]` | `mirabounties.use` | Displays recent bounty claims globally or filtered to one player. |
@@ -76,3 +78,11 @@ Ranked/global:
 ## MiraCosmetics Audio Integration (0.1.2)
 
 MiraCosmetics audio hooks warn an online bounty target when a bounty is posted and play claim audio, with high-value claims using the stronger nearby celebration.
+
+## Confirmed Bounty Increases (0.1.3)
+
+Players can explicitly increase an already-active bounty with `/bounty add <player> <amount>`.
+
+Before any money moves, MiraBounties shows the target, existing bounty, amount being added and resulting new total. `/bounty confirm` must be used within the configured confirmation window before Vault is asked to withdraw the contribution.
+
+If the bounty disappears, the confirmation expires, or the player's balance is insufficient, nothing is charged.
