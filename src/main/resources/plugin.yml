@@ -5,7 +5,7 @@ api-version: '1.21'
 authors: [FiveS]
 description: Persistent player bounty hunting for the Mira plugin ecosystem.
 depend: [Vault, MiraCore]
-softdepend: [PlaceholderAPI, MiraLeaderboards, MiraNPC]
+softdepend: [PlaceholderAPI, MiraLeaderboards, MiraNPC, MiraCosmetics]
 
 commands:
   bounty:
