@@ -10,7 +10,7 @@ softdepend: [PlaceholderAPI, MiraLeaderboards, MiraNPC, MiraCosmetics]
 commands:
   bounty:
     description: View, post and manage player bounties.
-    usage: /bounty [player|top|hunters|history|admin]
+    usage: /bounty [player|add|confirm|top|hunters|history|admin]
     aliases: [bounties]
 
 permissions:
