@@ -1,6 +1,7 @@
 package com.mira.bounties;
 
 import com.mira.bounties.api.MiraBountiesApi;
+import com.mira.bounties.util.CosmeticsBridge;
 import com.mira.core.api.MiraCore;
 import com.mira.core.api.MiraCoreProvider;
 import com.mira.core.api.ModuleHealth;
@@ -227,6 +228,8 @@ public final class MiraBountiesPlugin extends JavaPlugin implements Listener, Ta
 
         msg(sender, "&aPosted &f" + money(amount) + " &aon &f" + name(target)
                 + "&a. Total bounty: &f" + money(bounty(target.getUniqueId())));
+        Player onlineTarget = Bukkit.getPlayer(target.getUniqueId());
+        if (onlineTarget != null) CosmeticsBridge.play(onlineTarget, "bounty_placed");
 
         if (amount >= getConfig().getDouble("broadcast.post-threshold", 100000.0)) {
             broadcast("&6&lBOUNTY &e" + player.getName() + " &7placed &6" + money(amount)
@@ -382,7 +385,14 @@ public final class MiraBountiesPlugin extends JavaPlugin implements Listener, Ta
 
         msg(killer, "&aYou claimed &f" + money(amount) + " &afrom &f" + victim.getName() + "&a's bounty.");
 
-        if (amount >= getConfig().getDouble("broadcast.claim-threshold", 100000.0)) {
+        double claimThreshold = getConfig().getDouble("broadcast.claim-threshold", 100000.0);
+        if (amount >= claimThreshold) {
+            CosmeticsBridge.playNearby(killer.getLocation(), "bounty_claimed_large", 20.0D);
+        } else {
+            CosmeticsBridge.play(killer, "bounty_claimed");
+        }
+
+        if (amount >= claimThreshold) {
             broadcast("&6&lBOUNTY CLAIMED &e" + killer.getName() + " &7killed &c" + victim.getName()
                     + " &7for &6" + money(amount) + "&7!");
         }
