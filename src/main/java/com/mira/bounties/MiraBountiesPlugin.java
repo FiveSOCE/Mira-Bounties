@@ -315,8 +315,10 @@ public final class MiraBountiesPlugin extends JavaPlugin implements Listener, Ta
 
         msg(player, (increase ? "&aAdded &f" : "&aPosted &f") + money(amount) + " &aon &f" + name(target)
                 + "&a. Total bounty: &f" + money(bounty(target.getUniqueId())));
+        // Placing and receiving a bounty are separate presentation events.
+        CosmeticsBridge.play(player, "bounty_placed");
         Player onlineTarget = Bukkit.getPlayer(target.getUniqueId());
-        if (onlineTarget != null) CosmeticsBridge.play(onlineTarget, "bounty_placed");
+        if (onlineTarget != null) CosmeticsBridge.play(onlineTarget, "bounty_received");
 
         if (amount >= getConfig().getDouble("broadcast.post-threshold", 100000.0)) {
             broadcast("&6&lBOUNTY &e" + player.getName() + (increase ? " &7added &6" : " &7placed &6")
@@ -449,7 +451,9 @@ public final class MiraBountiesPlugin extends JavaPlugin implements Listener, Ta
         Player killer = victim.getKiller();
         if (killer == null || killer.getUniqueId().equals(victim.getUniqueId())) return;
 
-        double amount = bounty(victim.getUniqueId());
+        List<Contribution> claimedContributions = new ArrayList<>(
+                bounties.getOrDefault(victim.getUniqueId(), List.of()));
+        double amount = claimedContributions.stream().mapToDouble(Contribution::amount).sum();
         if (amount <= 0) return;
 
         var deposit = economy.depositPlayer(killer, amount);
@@ -479,10 +483,19 @@ public final class MiraBountiesPlugin extends JavaPlugin implements Listener, Ta
         msg(killer, "&aYou claimed &f" + money(amount) + " &afrom &f" + victim.getName() + "&a's bounty.");
 
         double claimThreshold = getConfig().getDouble("broadcast.claim-threshold", 100000.0);
+
+        // Normal claim confirmation belongs to the people who funded the bounty.
+        claimedContributions.stream()
+                .map(Contribution::poster)
+                .filter(Objects::nonNull)
+                .distinct()
+                .map(Bukkit::getPlayer)
+                .filter(Objects::nonNull)
+                .forEach(poster -> CosmeticsBridge.play(poster, "bounty_claimed"));
+
+        // Large claims are intentionally server-wide, like an End Portal activation.
         if (amount >= claimThreshold) {
-            CosmeticsBridge.playNearby(killer.getLocation(), "bounty_claimed_large", 20.0D);
-        } else {
-            CosmeticsBridge.play(killer, "bounty_claimed");
+            CosmeticsBridge.playGlobal("bounty_claimed_large", killer.getLocation());
         }
 
         if (amount >= claimThreshold) {
