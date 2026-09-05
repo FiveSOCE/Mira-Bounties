@@ -29,18 +29,18 @@ jobs:
       - name: Upload plugin jar
         uses: actions/upload-artifact@v4
         with:
-          name: MiraBounties-0.1.2
-          path: build/libs/MiraBounties-0.1.2.jar
+          name: MiraBounties-0.1.3
+          path: build/libs/MiraBounties-0.1.3.jar
 
-      - name: Publish v0.1.2 release if missing
+      - name: Publish v0.1.3 release if missing
         if: github.event_name != 'pull_request'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          if ! gh release view v0.1.2 >/dev/null 2>&1; then
-            gh release create v0.1.2 \
-              build/libs/MiraBounties-0.1.2.jar \
+          if ! gh release view v0.1.3 >/dev/null 2>&1; then
+            gh release create v0.1.3 \
+              build/libs/MiraBounties-0.1.3.jar \
               --target "${{ github.sha }}" \
-              --title "MiraBounties v0.1.2" \
-              --notes "Adds optional MiraCosmetics audio for bounty placement warnings, normal claims and nearby high-value claim celebrations."
+              --title "MiraBounties v0.1.3" \
+              --notes "Adds explicit player-funded bounty increases with existing/add/new-total preview and a short confirmation window before Vault funds are withdrawn."
           fi
