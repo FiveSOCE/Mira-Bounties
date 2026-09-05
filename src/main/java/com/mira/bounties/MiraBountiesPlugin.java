@@ -484,18 +484,19 @@ public final class MiraBountiesPlugin extends JavaPlugin implements Listener, Ta
 
         double claimThreshold = getConfig().getDouble("broadcast.claim-threshold", 100000.0);
 
-        // Normal claim confirmation belongs to the people who funded the bounty.
-        claimedContributions.stream()
-                .map(Contribution::poster)
-                .filter(Objects::nonNull)
-                .distinct()
-                .map(Bukkit::getPlayer)
-                .filter(Objects::nonNull)
-                .forEach(poster -> CosmeticsBridge.play(poster, "bounty_claimed"));
-
-        // Large claims are intentionally server-wide, like an End Portal activation.
         if (amount >= claimThreshold) {
+            // Large claims replace the normal contributor sound and are intentionally server-wide,
+            // like an End Portal activation.
             CosmeticsBridge.playGlobal("bounty_claimed_large", killer.getLocation());
+        } else {
+            // Normal claim confirmation belongs to the people who funded the bounty.
+            claimedContributions.stream()
+                    .map(Contribution::poster)
+                    .filter(Objects::nonNull)
+                    .distinct()
+                    .map(Bukkit::getPlayer)
+                    .filter(Objects::nonNull)
+                    .forEach(poster -> CosmeticsBridge.play(poster, "bounty_claimed"));
         }
 
         if (amount >= claimThreshold) {
