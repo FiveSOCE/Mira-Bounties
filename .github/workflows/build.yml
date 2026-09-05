@@ -29,18 +29,18 @@ jobs:
       - name: Upload plugin jar
         uses: actions/upload-artifact@v4
         with:
-          name: MiraBounties-0.1.4
-          path: build/libs/MiraBounties-0.1.4.jar
+          name: MiraBounties-0.1.5
+          path: build/libs/MiraBounties-0.1.5.jar
 
-      - name: Publish v0.1.4 release if missing
+      - name: Publish v0.1.5 release if missing
         if: github.event_name != 'pull_request'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          if ! gh release view v0.1.4 >/dev/null 2>&1; then
-            gh release create v0.1.4 \
-              build/libs/MiraBounties-0.1.4.jar \
+          if ! gh release view v0.1.5 >/dev/null 2>&1; then
+            gh release create v0.1.5 \
+              build/libs/MiraBounties-0.1.5.jar \
               --target "${{ github.sha }}" \
-              --title "MiraBounties v0.1.4" \
-              --notes "Corrects bounty sound audiences: placer and target now receive separate events, bounty claim sound goes to online contributors who funded the bounty, and large bounty claims trigger the global MiraCosmetics celebration."
+              --title "MiraBounties v0.1.5" \
+              --notes "Finalizes bounty sound audiences: placer and target receive separate placement/received events, normal claims notify online contributors only, and large claims replace the normal claim sound with a single server-wide End Portal celebration."
           fi
