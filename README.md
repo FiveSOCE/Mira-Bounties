@@ -4,7 +4,7 @@ MiraBounties is the player-bounty system for the Mira Paper server suite. Player
 
 ## Download
 
-[**Download MiraBounties v0.1.5**](https://github.com/FiveSOCE/Mira-Bounties/releases/download/v0.1.5/MiraBounties-0.1.5.jar)
+[**Download MiraBounties v0.1.5**](https://github.com/FiveSOCE/Mira-Bounties/releases/download/v0.1.6/MiraBounties-0.1.6.jar)
 
 [View All Releases](https://github.com/FiveSOCE/Mira-Bounties/releases)
 
