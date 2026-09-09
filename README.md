@@ -1,12 +1,14 @@
 # MiraBounties
 
-MiraBounties is the player-bounty system for the Mira Paper server suite. Players can place Vault-backed bounties on other players, stack contributions on the same target, view the richest targets, and automatically pay the bounty to a legitimate killer.
-
 ## Download
 
-[**Download MiraBounties v0.1.5**](https://github.com/FiveSOCE/Mira-Bounties/releases/download/v0.1.6/MiraBounties-0.1.6.jar)
+**Latest compatibility release: v0.1.6**
 
-[View All Releases](https://github.com/FiveSOCE/Mira-Bounties/releases)
+[**Download MiraBounties-0.1.6.jar**](https://github.com/FiveSOCE/Mira-Bounties/releases/download/v0.1.6/MiraBounties-0.1.6.jar)
+
+[View all releases](https://github.com/FiveSOCE/Mira-Bounties/releases)
+
+MiraBounties is the player-bounty system for the Mira Paper server suite. Players can place Vault-backed bounties on other players, stack contributions on the same target, view the richest targets, and automatically pay the bounty to a legitimate killer.
 
 ## Requirements / Dependencies
 
